@@ -1,8 +1,10 @@
 package ru.netology.web.data;
 
 import lombok.Value;
+
 public class DataHelper {
-    private DataHelper() {}
+    private DataHelper() {
+    }
 
     @Value
     public static class AuthInfo {
@@ -32,7 +34,7 @@ public class DataHelper {
         private String number;
     }
 
-    public static Card1Info getCard1Info () {
+    public static Card1Info getCard1Info() {
         return new Card1Info("5559 0000 0000 0001");
     }
 
@@ -41,8 +43,13 @@ public class DataHelper {
         private String number;
     }
 
-    public static Card1Info getCard2Info () {
+    public static Card1Info getCard2Info() {
         return new Card1Info("5559 0000 0000 0002");
+    }
+
+    @Value
+    public static class AmountValue {
+        private String amountValue;
     }
 
 

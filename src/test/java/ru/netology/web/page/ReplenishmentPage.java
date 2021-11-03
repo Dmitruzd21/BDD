@@ -13,18 +13,23 @@ public class ReplenishmentPage {
     private SelenideElement amount = $("[data-test-id=amount] .input__control");
     private SelenideElement from = $("[data-test-id=from] .input__control");
     private SelenideElement replenishmentButtonAfter = $("[data-test-id=action-transfer]");
-    private static String amountValue = "1000";
 
-    public static Integer getAmountValueInt() {
-        return Integer.valueOf(amountValue);
+
+    public void setAmountValue(String amountValue) {
+
     }
+
+    // private static String amountValue = "1000";
+
+    //public static Integer getAmountValueInt() {
+    //     return Integer.valueOf(amountValue);
+    // }
 
     private String firstCardNumber = DataHelper.getCard1Info().getNumber();
     private String secondCardNumber = DataHelper.getCard2Info().getNumber();
 
 
-
-    public DashboardPage replenishment(String from1To2OrFrom2to1) {
+    public DashboardPage replenishment(String from1To2OrFrom2to1, String amountValue) {
         if (from1To2OrFrom2to1 == "from1To2") {
             replenishmentButtonBefore2.click();
             amount.setValue(amountValue);
