@@ -18,10 +18,12 @@ class MoneyTransferTest {
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.validVerify(verificationCode);
+        var dashboardPage = new DashboardPage();
+        int initialBalanceCard1 = dashboardPage.getInitialBalanceOfCard(1);
+        int initialBalanceCard2 = dashboardPage.getInitialBalanceOfCard(2);
         var replenishmentPage = new ReplenishmentPage();
         replenishmentPage.replenishment("from2To1");
-        var balanceChekPage = new BalanceCheckPage();
-        balanceChekPage.checkFinalBalance("from2To2");
+        dashboardPage.checkFinalBalance("from2To1", initialBalanceCard1,initialBalanceCard2);
     }
 
     @Test
@@ -34,10 +36,12 @@ class MoneyTransferTest {
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         verificationPage.validVerify(verificationCode);
+        var dashboardPage = new DashboardPage();
+        int initialBalanceCard1 = dashboardPage.getInitialBalanceOfCard(1);
+        int initialBalanceCard2 = dashboardPage.getInitialBalanceOfCard(2);
         var replenishmentPage = new ReplenishmentPage();
         replenishmentPage.replenishment("from1To2");
-        var balanceChekPage = new BalanceCheckPage();
-        balanceChekPage.checkFinalBalance("from1To2");
+        dashboardPage.checkFinalBalance("from1To2",initialBalanceCard1,initialBalanceCard2);
     }
 
 

@@ -30,21 +30,19 @@ public class DataHelper {
     @Value
     public static class Card1Info {
         private String number;
-        private int balance;
     }
 
     public static Card1Info getCard1Info () {
-        return new Card1Info("5559 0000 0000 0001",10_000);
+        return new Card1Info("5559 0000 0000 0001");
     }
 
     @Value
     public static class Card2Info {
         private String number;
-        private int balance;
     }
 
     public static Card1Info getCard2Info () {
-        return new Card1Info("5559 0000 0000 0002",10_000);
+        return new Card1Info("5559 0000 0000 0002");
     }
 
 
