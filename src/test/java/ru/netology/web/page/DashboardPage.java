@@ -12,15 +12,11 @@ import static com.codeborne.selenide.Selenide.$$;
 
 public class DashboardPage {
     private SelenideElement heading = $("[data-test-id=dashboard]");
-    private ElementsCollection cards = $$(".list__item");
+    private SelenideElement firstCard = $("#root div ul li:nth-child(1) div");
+    private SelenideElement secondCard = $("#root div ul li:nth-child(2) div");
+
     private final String balanceStart = "баланс: ";
     private final String balanceFinish = " р.";
-
-    private SelenideElement firstCard = $$("#root div ul li:nth-child(1) div").first();
-    private SelenideElement secondCard = $$("#root div ul li:nth-child(2) div").last();
-
-    // сумма перевода
-    //private int transferAmount = ReplenishmentPage.getAmountValueInt();
 
     public DashboardPage() {
         heading.shouldBe(visible);
@@ -56,12 +52,12 @@ public class DashboardPage {
         var text = "";
         int initialCardBalance = 0;
         if (cardIndex == 1) {
-            text = cards.first().text();
+            text = firstCard.text();
             initialCardsBalance.setCard1Balance(exctractBalance(text));
             initialCardBalance = initialCardsBalance.getCard1Balance();
         }
         if (cardIndex == 2) {
-            text = cards.last().text();
+            text = secondCard.text();
             initialCardsBalance.setCard2Balance(exctractBalance(text));
             initialCardBalance = initialCardsBalance.getCard2Balance();
         }
@@ -101,7 +97,6 @@ public class DashboardPage {
     // метод для вычисления окончательного баланса карт
     public FinalCardsBalance finalBalance(String from1To2OrFrom2to1, int initialBalanceCard1, int initialBalanceCard2, int transferAmount) {
         var сardsBalance = new FinalCardsBalance();
-        var initialBalance = new InitialCardsBalance();
         if (from1To2OrFrom2to1 == "from1To2") {
             int finalBalanceOfTheFirstCard = initialBalanceCard1 - transferAmount;
             int finalBalanceOfTheSecondCard = initialBalanceCard2 + transferAmount;
@@ -124,11 +119,12 @@ public class DashboardPage {
         // проверка осуществления перевода
         firstCard.shouldHave(text(String.valueOf(finalBalanceOfCard1)));
         secondCard.shouldHave(text(String.valueOf(finalBalanceOfCard2)));
+        // возвращение баланса в тест для последующего ассерта (в тесте)
         int cardBalance = 0;
         if (from1To2OrFrom2to1 == "from1To2") {
             cardBalance = finalBalanceOfCard1;
         }
-        if (from1To2OrFrom2to1 == "from2To1"){
+        if (from1To2OrFrom2to1 == "from2To1") {
             cardBalance = finalBalanceOfCard2;
         }
         return cardBalance;
