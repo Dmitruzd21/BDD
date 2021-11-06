@@ -78,8 +78,8 @@ class MoneyTransferTest {
     }
 
     @Test
-    @DisplayName("GetErrorWhenTransferMoneyBetweenOwnCardsFrom2ndTo1stIfAmountValueMoreInitialBalance")
-    void shouldFailWhenTransferMoneyBetweenOwnCardsFrom2ndTo1stIfAmountValueMoreInitialBalance() {
+    @DisplayName("shouldNotTransferMoneyBetweenOwnCardsFrom2ndTo1stIfAmountValueMoreInitialBalance")
+    void shouldNotTransferMoneyBetweenOwnCardsFrom2ndTo1stIfAmountValueMoreInitialBalance() {
         String amountValue = "35000";
         open("http://localhost:9999");
         var loginPage = new LoginPageV2();
@@ -97,9 +97,9 @@ class MoneyTransferTest {
     }
 
     @Test
-    @DisplayName("GetErrorWhenTransferMoneyBetweenOwnCardsFrom1stTo2ndIfAmountValueMoreInitialBalance")
-    void shouldFailErrorWhenTransferMoneyBetweenOwnCardsFrom1stTo2ndIfAmountValueMoreInitialBalance() {
-        String amountValue = "335000";
+    @DisplayName("shouldNotTransferMoneyBetweenOwnCardsFrom1stTo2ndIfAmountValueMoreInitialBalance")
+    void shouldNotTransferMoneyBetweenOwnCardsFrom1stTo2ndIfAmountValueMoreInitialBalance() {
+        String amountValue = "35000";
         open("http://localhost:9999");
         var loginPage = new LoginPageV2();
         var authInfo = DataHelper.getAuthInfo();
