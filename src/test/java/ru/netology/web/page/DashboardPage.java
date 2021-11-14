@@ -12,8 +12,11 @@ import static com.codeborne.selenide.Selenide.$$;
 
 public class DashboardPage {
     private SelenideElement heading = $("[data-test-id=dashboard]");
-    private SelenideElement firstCard = $("#root div ul li:nth-child(1) div");
-    private SelenideElement secondCard = $("#root div ul li:nth-child(2) div");
+    private SelenideElement firstCard = $("[data-test-id=\"92df3f1c-a033-48e6-8390-206f6b1f56c0\"]");
+    private SelenideElement secondCard = $("[data-test-id=\"0f3f5c2a-249e-4c3d-8287-09f7a039391d\"]");
+    private ElementsCollection cards = $$ (".list__item");
+    private SelenideElement replenishmentButtonBefore1 = $("[data-test-id=\"92df3f1c-a033-48e6-8390-206f6b1f56c0\"] .button__text");
+    private SelenideElement replenishmentButtonBefore2 = $("[data-test-id=\"0f3f5c2a-249e-4c3d-8287-09f7a039391d\"] .button__text");
 
     private final String balanceStart = "баланс: ";
     private final String balanceFinish = " р.";
@@ -23,8 +26,8 @@ public class DashboardPage {
     }
 
 
-    // data - класс для хранеия и извлечения информации о начальном балансе карт
-    public class InitialCardsBalance {
+    // data - класс для хранеия и извлечения информации о начальном и конечном балансе карт
+    public class CardsBalance {
         int card1Balance;
         int card2Balance;
 
@@ -48,20 +51,9 @@ public class DashboardPage {
 
     // метод получения начального баланса карт
     public int getInitialBalanceOfCard(int cardIndex) {
-        var initialCardsBalance = new InitialCardsBalance();
-        var text = "";
-        int initialCardBalance = 0;
-        if (cardIndex == 1) {
-            text = firstCard.text();
-            initialCardsBalance.setCard1Balance(exctractBalance(text));
-            initialCardBalance = initialCardsBalance.getCard1Balance();
-        }
-        if (cardIndex == 2) {
-            text = secondCard.text();
-            initialCardsBalance.setCard2Balance(exctractBalance(text));
-            initialCardBalance = initialCardsBalance.getCard2Balance();
-        }
-        return initialCardBalance;
+        var initialCardsBalance = new CardsBalance();
+        var text = cards.get(cardIndex-1).text();
+        return exctractBalance(text);
     }
 
     public int exctractBalance(String text) {
@@ -71,32 +63,10 @@ public class DashboardPage {
         return Integer.parseInt(value);
     }
 
-    // data - класс для хранеия и извлечения информации о конечном балансе карт
-    public class FinalCardsBalance {
-        int card1Balance;
-        int card2Balance;
-
-        public void setCard1Balance(int card1Balance) {
-            this.card1Balance = card1Balance;
-        }
-
-        public void setCard2Balance(int card2Balance) {
-            this.card2Balance = card2Balance;
-        }
-
-        public int getCard1Balance() {
-            return card1Balance;
-        }
-
-        public int getCard2Balance() {
-            return card2Balance;
-        }
-
-    }
 
     // метод для вычисления окончательного баланса карт
-    public FinalCardsBalance finalBalance(String from1To2OrFrom2to1, int initialBalanceCard1, int initialBalanceCard2, int transferAmount) {
-        var сardsBalance = new FinalCardsBalance();
+    public CardsBalance finalBalance(String from1To2OrFrom2to1, int initialBalanceCard1, int initialBalanceCard2, int transferAmount) {
+        var сardsBalance = new CardsBalance();
         if (from1To2OrFrom2to1 == "from1To2") {
             int finalBalanceOfTheFirstCard = initialBalanceCard1 - transferAmount;
             int finalBalanceOfTheSecondCard = initialBalanceCard2 + transferAmount;
@@ -119,7 +89,7 @@ public class DashboardPage {
         // проверка осуществления перевода
         firstCard.shouldHave(text(String.valueOf(finalBalanceOfCard1)));
         secondCard.shouldHave(text(String.valueOf(finalBalanceOfCard2)));
-        // возвращение баланса в тест для последующего ассерта (в тесте)
+        // возвращение баланса в тест для последующего ассерта в тесте с негативным сценарием
         int cardBalance = 0;
         if (from1To2OrFrom2to1 == "from1To2") {
             cardBalance = finalBalanceOfCard1;
@@ -128,6 +98,16 @@ public class DashboardPage {
             cardBalance = finalBalanceOfCard2;
         }
         return cardBalance;
+    }
+
+    // метод нажатия кнопки для переключения на страницу оплаты
+    public ReplenishmentPage clickReplenishmentButton (String from1To2OrFrom2to1) {
+        if (from1To2OrFrom2to1=="from1to2") {
+            replenishmentButtonBefore2.click();
+        } else {
+            replenishmentButtonBefore1.click();
+        }
+        return new ReplenishmentPage();
     }
 
 }
