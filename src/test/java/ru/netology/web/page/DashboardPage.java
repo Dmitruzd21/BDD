@@ -22,7 +22,7 @@ public class DashboardPage {
 
 
     // метод получения начального баланса карт
-    public int getInitialBalanceOfCard(int cardIndex) {
+    public int getBalanceOfCard(int cardIndex) {
         var text = cards.get(cardIndex - 1).text();
         return exctractBalance(text);
     }
@@ -34,21 +34,6 @@ public class DashboardPage {
         return Integer.parseInt(value);
     }
 
-
-    // метод для вычисления окончательного баланса карт
-    public int finalBalance(String from1To2OrFrom2to1, int cardIndex, int initialBalanceCard1, int initialBalanceCard2, int transferAmount) {
-        int[] finalBalanceOfCard = new int[2];
-        if (from1To2OrFrom2to1 == "from1To2") {
-            finalBalanceOfCard[0] = initialBalanceCard1 - transferAmount;
-            finalBalanceOfCard[1] = initialBalanceCard2 + transferAmount;
-        }
-        if (from1To2OrFrom2to1 == "from2To1") {
-            finalBalanceOfCard[0] = initialBalanceCard1 + transferAmount;
-            finalBalanceOfCard[1] = initialBalanceCard2 - transferAmount;
-        }
-        return finalBalanceOfCard[cardIndex - 1];
-    }
-
     // метод нажатия кнопки для переключения на страницу оплаты
     public ReplenishmentPage clickReplenishmentButton(String from1To2OrFrom2to1) {
         if (from1To2OrFrom2to1 == "from1to2") {
@@ -58,5 +43,4 @@ public class DashboardPage {
         }
         return new ReplenishmentPage();
     }
-
 }

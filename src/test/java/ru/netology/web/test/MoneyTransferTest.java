@@ -1,22 +1,16 @@
 package ru.netology.web.test;
 
-import com.codeborne.selenide.SelenideElement;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import ru.netology.web.data.DataHelper;
 import ru.netology.web.page.*;
 
-import static com.codeborne.selenide.Condition.text;
-import static com.codeborne.selenide.Selenide.$;
 import static org.junit.jupiter.api.Assertions.*;
 
 import static com.codeborne.selenide.Selenide.open;
 
 class MoneyTransferTest {
-    private SelenideElement firstCard = $("[data-test-id=\"92df3f1c-a033-48e6-8390-206f6b1f56c0\"]");
-    private SelenideElement secondCard = $("[data-test-id=\"0f3f5c2a-249e-4c3d-8287-09f7a039391d\"]");
-
     @BeforeEach
         // метод сравнивает баланс карт, если он не равен, то разницу между картами отправляет на карту, где баланс меньше
     void shouldRestoreCardsBalanceIfItIsNeeded() {
@@ -27,8 +21,8 @@ class MoneyTransferTest {
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
         var dashboardPage = verificationPage.validVerify(verificationCode);
-        int initialBalanceCard1 = dashboardPage.getInitialBalanceOfCard(1);
-        int initialBalanceCard2 = dashboardPage.getInitialBalanceOfCard(2);
+        int initialBalanceCard1 = dashboardPage.getBalanceOfCard(1);
+        int initialBalanceCard2 = dashboardPage.getBalanceOfCard(2);
         if (initialBalanceCard1 == initialBalanceCard2) {
             String status = "The balances of the two cards are equal";
         } else {
@@ -55,16 +49,18 @@ class MoneyTransferTest {
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
-        var dashboardPage = verificationPage.validVerify(verificationCode);
-        int initialBalanceCard1 = dashboardPage.getInitialBalanceOfCard(1);
-        int initialBalanceCard2 = dashboardPage.getInitialBalanceOfCard(2);
-        var replenishmentPage = dashboardPage.clickReplenishmentButton("from2to1");
-        replenishmentPage.replenishment(secondCardNumber, amountValue);
-        int finalBalanceOfCard1 = dashboardPage.finalBalance("from2To1", 1, initialBalanceCard1, initialBalanceCard2, Integer.parseInt(amountValue));
-        int finalBalanceOfCard2 = dashboardPage.finalBalance("from2To1", 2, initialBalanceCard1, initialBalanceCard2, Integer.parseInt(amountValue));
-        // проверка осуществления перевода
-        firstCard.shouldHave(text(String.valueOf(finalBalanceOfCard1)));
-        secondCard.shouldHave(text(String.valueOf(finalBalanceOfCard2)));
+        var dashboardPageBefore = verificationPage.validVerify(verificationCode);
+        int initialBalanceCard1 = dashboardPageBefore.getBalanceOfCard(1);
+        int initialBalanceCard2 = dashboardPageBefore.getBalanceOfCard(2);
+        var replenishmentPage = dashboardPageBefore.clickReplenishmentButton("from2to1");
+        var dashboardPageAfter = replenishmentPage.replenishment(secondCardNumber, amountValue);
+        // проверка того, что ожидаемый конечный баланс равен фактическому
+        int expectedFinalBalanceOfCard1 = initialBalanceCard1 + Integer.parseInt(amountValue);
+        int expectedFinalBalanceOfCard2 = initialBalanceCard2 - Integer.parseInt(amountValue);
+        int actualFinalBalanceOfCard1 = dashboardPageAfter.getBalanceOfCard(1);
+        int actualFinalBalanceOfCard2 = dashboardPageAfter.getBalanceOfCard(2);
+        assertEquals(expectedFinalBalanceOfCard1, actualFinalBalanceOfCard1);
+        assertEquals(expectedFinalBalanceOfCard2, actualFinalBalanceOfCard2);
     }
 
     @Test
@@ -76,16 +72,18 @@ class MoneyTransferTest {
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
-        var dashboardPage = verificationPage.validVerify(verificationCode);
-        int initialBalanceCard1 = dashboardPage.getInitialBalanceOfCard(1);
-        int initialBalanceCard2 = dashboardPage.getInitialBalanceOfCard(2);
-        var replenishmentPage = dashboardPage.clickReplenishmentButton("from1to2");
-        replenishmentPage.replenishment(firstCardNumber, amountValue);
-        int finalBalanceOfCard1 = dashboardPage.finalBalance("from1To2", 1, initialBalanceCard1, initialBalanceCard2, Integer.parseInt(amountValue));
-        int finalBalanceOfCard2 = dashboardPage.finalBalance("from1To2", 2, initialBalanceCard1, initialBalanceCard2, Integer.parseInt(amountValue));
-        // проверка осуществления перевода
-        firstCard.shouldHave(text(String.valueOf(finalBalanceOfCard1)));
-        secondCard.shouldHave(text(String.valueOf(finalBalanceOfCard2)));
+        var dashboardPageBefore = verificationPage.validVerify(verificationCode);
+        int initialBalanceCard1 = dashboardPageBefore.getBalanceOfCard(1);
+        int initialBalanceCard2 = dashboardPageBefore.getBalanceOfCard(2);
+        var replenishmentPage = dashboardPageBefore.clickReplenishmentButton("from1to2");
+        var dashboardPageAfter = replenishmentPage.replenishment(firstCardNumber, amountValue);
+        // проверка того, что ожидаемый конечный баланс равен фактическому
+        int expectedFinalBalanceOfCard1 = initialBalanceCard1 - Integer.parseInt(amountValue);
+        int expectedFinalBalanceOfCard2 = initialBalanceCard2 + Integer.parseInt(amountValue);
+        int actualFinalBalanceOfCard1 = dashboardPageAfter.getBalanceOfCard(1);
+        int actualFinalBalanceOfCard2 = dashboardPageAfter.getBalanceOfCard(2);
+        assertEquals(expectedFinalBalanceOfCard1, actualFinalBalanceOfCard1);
+        assertEquals(expectedFinalBalanceOfCard2, actualFinalBalanceOfCard2);
     }
 
     @Test
@@ -97,18 +95,14 @@ class MoneyTransferTest {
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
-        var dashboardPage = verificationPage.validVerify(verificationCode);
-        int initialBalanceCard1 = dashboardPage.getInitialBalanceOfCard(1);
-        int initialBalanceCard2 = dashboardPage.getInitialBalanceOfCard(2);
-        var replenishmentPage = dashboardPage.clickReplenishmentButton("from2to1");
-        replenishmentPage.replenishment(secondCardNumber, amountValue);
-        int finalBalanceOfCard1 = dashboardPage.finalBalance("from2To1", 1, initialBalanceCard1, initialBalanceCard2, Integer.parseInt(amountValue));
-        int finalBalanceOfCard2 = dashboardPage.finalBalance("from2To1", 2, initialBalanceCard1, initialBalanceCard2, Integer.parseInt(amountValue));
-        // проверка осуществления перевода
-        firstCard.shouldHave(text(String.valueOf(finalBalanceOfCard1)));
-        secondCard.shouldHave(text(String.valueOf(finalBalanceOfCard2)));
-        // проверка того, что баланс второй карты больше нуля
-        assertTrue(finalBalanceOfCard2 > 0);
+        var dashboardPageBefore = verificationPage.validVerify(verificationCode);
+        int initialBalanceCard1 = dashboardPageBefore.getBalanceOfCard(1);
+        int initialBalanceCard2 = dashboardPageBefore.getBalanceOfCard(2);
+        var replenishmentPage = dashboardPageBefore.clickReplenishmentButton("from2to1");
+        var dashboardPageAfter = replenishmentPage.replenishment(secondCardNumber, amountValue);
+        // проверка того, что фактический баланс второй карты больше ожидаемого значения (нуля)
+        int actualFinalBalanceOfCard2 = dashboardPageAfter.getBalanceOfCard(2);
+        assertTrue(actualFinalBalanceOfCard2 > 0);
     }
 
     @Test
@@ -120,18 +114,14 @@ class MoneyTransferTest {
         var authInfo = DataHelper.getAuthInfo();
         var verificationPage = loginPage.validLogin(authInfo);
         var verificationCode = DataHelper.getVerificationCodeFor(authInfo);
-        var dashboardPage = verificationPage.validVerify(verificationCode);
-        int initialBalanceCard1 = dashboardPage.getInitialBalanceOfCard(1);
-        int initialBalanceCard2 = dashboardPage.getInitialBalanceOfCard(2);
-        var replenishmentPage = dashboardPage.clickReplenishmentButton("from1to2");
-        replenishmentPage.replenishment(firstCardNumber, amountValue);
-        int finalBalanceOfCard1 = dashboardPage.finalBalance("from1To2", 1, initialBalanceCard1, initialBalanceCard2, Integer.parseInt(amountValue));
-        int finalBalanceOfCard2 = dashboardPage.finalBalance("from1To2", 2, initialBalanceCard1, initialBalanceCard2, Integer.parseInt(amountValue));
-        // проверка осуществления перевода
-        firstCard.shouldHave(text(String.valueOf(finalBalanceOfCard1)));
-        secondCard.shouldHave(text(String.valueOf(finalBalanceOfCard2)));
-        // проверка того, что баланс первой карты больше нуля
-        assertTrue(finalBalanceOfCard1 > 0);
+        var dashboardPageBefore = verificationPage.validVerify(verificationCode);
+        int initialBalanceCard1 = dashboardPageBefore.getBalanceOfCard(1);
+        int initialBalanceCard2 = dashboardPageBefore.getBalanceOfCard(2);
+        var replenishmentPage = dashboardPageBefore.clickReplenishmentButton("from1to2");
+        var dashBoardPageAfter = replenishmentPage.replenishment(firstCardNumber, amountValue);
+        // проверка того, что фактический баланс первой карты больше ожидаемого значения (нуля)
+        int actualFinalBalanceOfCard1 = dashBoardPageAfter.getBalanceOfCard(1);
+        assertTrue(actualFinalBalanceOfCard1 > 0);
     }
 
 }
